@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
-
 import { Card } from "@mui/material";
-
 import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
-
 import styles from "./AccountCard.module.css";
 import Link from "next/link";
 
@@ -20,46 +17,44 @@ interface IProfile {
 
 export interface IAccountCard {
   profiles: IProfile[];
-  id: string;
   editable?: boolean;
-  setIsProfileModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  handleProfileClick: (profile: IProfile) => void;
+  handleAddProfile: () => void;
 }
 
 const AccountCard: React.FC<IAccountCard> = ({
   profiles,
   editable,
-  id,
-  setIsProfileModalOpen,
+  handleProfileClick,
+  handleAddProfile,
 }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [integrations, setIntegrations] = useState<IProfile[]>([]);
 
   useEffect(() => {
     setIntegrations(profiles);
-  }, []);
+  }, [profiles]);
 
   return (
     <Card>
       <div className={styles["card"]}>
         {integrations.map((item, index) => (
-          <Button key='k1' onClick={() => setIsProfileModalOpen(true)}>
+          <Button
+          //Se estaba usando la misma clave (k1) para todos los elementos y se ha usado el index para generar claves unicas. k0,k1,k2... 
+            key={`k${index}`}
+            onClick={() => handleProfileClick(item)}
+          >
             <Avatar alt={item.username} src={item.avatar} />
             {item.username}
           </Button>
         ))}
         {editable && (
-          <div>
-            <Button onClick={() => setIsModalOpen(true)} />
-            <div className={styles["add-button-text"]}>Add</div>
-          </div>
-        )}
-        {!editable && (
           <div className={styles["empty-accounts"]}>
-            <Button >
-              <span className={styles["link"]}>Add a new Profile</span>
-            </Button>
-          </div>
+          <Button onClick={handleAddProfile}>
+            <span className={styles["link"]}>Add profile</span>
+          </Button>
+        </div>
         )}
+        
       </div>
     </Card>
   );
